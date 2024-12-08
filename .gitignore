@@ -2,3 +2,5 @@ Scripts/
 Lib/
 Include/
 share/
+credentials.json
+token.json
