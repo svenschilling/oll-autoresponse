@@ -1,38 +1,69 @@
 from crewai import Agent, Task, Crew
-from langchain.llms import Ollama
 
-ollama_llm = Ollama(model="qwen2.5-coder:32b")
-
-# Define agents
+# Angenommen, Sie haben bereits Agenten definiert:
 scheduler_agent = Agent(
-    role='Appointment Scheduler',
-    goal='Efficiently manage and schedule appointments',
-    backstory='An expert in time management and scheduling',
-    llm=ollama_llm
+    role='Terminplaner',
+    goal='Termine optimal koordinieren',
+    backstory='Professioneller Kalender-Assistent'
 )
 
 reminder_agent = Agent(
-    role='Reminder Assistant',
-    goal='Ensure all appointments are remembered and attended',
-    backstory='Specializes in creating timely reminders for appointments',
-    llm=ollama_llm
+    role='Erinnerungsmanager',
+    goal='Wichtige Termine rechtzeitig ankündigen',
+    backstory='Spezialist für Termin-Benachrichtigungen'
 )
 
 conflict_resolver_agent = Agent(
-    role='Conflict Resolver',
-    goal='Resolve any scheduling conflicts that arise',
-    backstory='Skilled at finding solutions to overlapping appointments',
-    llm=ollama_llm
+    role='Terminkonflikt-Löser',
+    goal='Terminüberschneidungen intelligent auflösen',
+    backstory='Experte für Kalenderoptimierung'
 )
 
-# Create a crew with the agents
+# Termine scannen und priorisieren
+scan_appointments_task = Task(
+    description='Scanne alle Termine in den nächsten 30 Tagen und priorisiere sie nach Wichtigkeit',
+    agent=scheduler_agent,
+    expected_output='Priorisierte Liste von Terminen mit Kategorisierung'
+)
+
+# Erinnerungen generieren
+generate_reminders_task = Task(
+    description='Erstelle personalisierte Erinnerungen für bevorstehende Termine',
+    agent=reminder_agent,
+    expected_output='Detaillierte Erinnerungsliste mit Zeitpunkt und Kommunikationskanal'
+)
+
+# Terminkonfllikte auflösen
+resolve_conflicts_task = Task(
+    description='Identifiziere und löse Terminüberschneidungen intelligent',
+    agent=conflict_resolver_agent,
+    expected_output='Vorschläge zur Umplanung von konfligierenden Terminen'
+)
+
+# Komplexe Terminanalyse
+comprehensive_scheduling_task = Task(
+    description='''
+    1. Alle bestehenden Termine analysieren
+    2. Freie Zeitfenster identifizieren
+    3. Vorschläge für neue Terminblöcke erstellen
+    4. Potenzielle Zeitkonflikte markieren
+    ''',
+    agent=scheduler_agent,
+    expected_output='Detaillierter Terminbericht mit Optimierungsvorschlägen'
+)
+
+# Crew erstellen
 appointment_crew = Crew(
     agents=[scheduler_agent, reminder_agent, conflict_resolver_agent],
-    tasks=[],
+    tasks=[
+        scan_appointments_task,
+        generate_reminders_task, 
+        resolve_conflicts_task,
+        comprehensive_scheduling_task
+    ],
     verbose=True
 )
 
-# You can now use this crew to manage appointments
-# For example:
-# result = appointment_crew.kickoff()
-# print(result)
+# Starten
+result = appointment_crew.kickoff()
+print(result)
