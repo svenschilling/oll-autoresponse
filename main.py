@@ -1,18 +1,20 @@
+# from gauth import authenticate_gmail
 import gauth
-import agents
+import ollamaresponse
+import fetchmail
 
-from ollama import chat
-from ollama import ChatResponse
+import sys
+print(sys.path)
+sys.path.append('C:\code\ollama-auto') 
+print("after: " + sys.path)
+
 
 def main():
-    response: ChatResponse = chat(model='qwen2.5-coder:32b', messages=[
-        {
-            'role': 'user', 
-            'content': 'is the sky blue?'
-        }
-    ])
+    auth = gauth.authenticate_gmail()
+    emails = fetchmail.fetch_emails_from_last_30_days(auth)
+    print(emails)
 
-    print(response.message.content)
+
 
 if __name__ == '__main__':
     main()
